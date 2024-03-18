@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Test.Models.Product>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="row col row-cols-1 row-cols-md-2 g-4" style="margin-left: 10vw; margin-right: 10vw;">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        @{
+                            if (item.Picture != null)
+                            {
+                                string imreBase64Data = Convert.ToBase64String(item.Picture);
+                                string imgDataUrl = string.Format("data:image/png;base64,{0}", imreBase64Data);
+                                <img src="@imgDataUrl" class="card-img-top" alt="Hollywood Sign on The Hill"/>
+
+                            }
+                        }
+                        <div class="card-body">
+                            <h5 dir="rtl" class="card-title">@item.Name</h5>
+                            <br>
+                            <p dir="ltr" class="card-text" style="display: inline">تومان</p>
+                            <p class="card-text" style="display: inline">@item.Price.ToString("N0")</p>
+                            <a href="#" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-3" style="margin-top: 4vw;">
+            <h2>Filter</h2>
+            <br>
+            <form asp-controller="Home" asp-action="Index">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Product name" name="searchString">
+                </div>
+                <div class="form-group">
+                    <label>Min price</label>
+                    <input type="number" class="form-control" placeholder="Minimum price" name="minPrice">
+                </div>
+                <div class="form-group">
+                    <label>Max price</label>
+                    <input type="number" class="form-control"placeholder="Maximum price" name="maxPrice">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
