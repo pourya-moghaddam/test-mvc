@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -38,11 +39,41 @@ namespace Test.Controllers
             return View(product);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int? categoryId)
         {
             List<SelectListItem> myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
             myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
             ViewData["CategoryId"] = myList;
+            
+            if (categoryId == null)
+            {
+                return NotFound();
+            }
+
+            var category = await _context.Category.FindAsync(categoryId);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            string categoryFieldsString = category.Fields;
+            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            Console.WriteLine(categoryFieldsString);
+            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            string[] categoryFields = JsonSerializer.Deserialize<string[]>(categoryFieldsString);
+            ViewBag.CategoryFields = categoryFields;
+
+            // ProductViewModel productViewModel = new ProductViewModel();
+            // productViewModel.CategoryFields.Fields = new Dictionary<string, object>();
+            // foreach (string field in categoryFields)
+            // {
+            //     productViewModel.CategoryFields.Fields.Add(field, null);
+            // }
+            
             return View(new ProductViewModel());
         }
 
@@ -50,6 +81,10 @@ namespace Test.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductViewModel viewModel)
         {
+            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
+            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
+            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
+            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
             IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
             foreach (ModelError error in allErrors)
             {
@@ -59,6 +94,8 @@ namespace Test.Controllers
             if (ModelState.IsValid)
             {
                 viewModel.Product.Picture = ConvertIFormFileToByteArray(viewModel);
+
+                viewModel.Product.CategoryFields = JsonSerializer.Serialize(viewModel.CategoryFields.Fields);
 
                 _context.Add(viewModel.Product);
                 await _context.SaveChangesAsync();
@@ -173,6 +210,14 @@ namespace Test.Controllers
         {
             string imreBase64Data = Convert.ToBase64String(product.Picture);
             return string.Format("data:image/png;base64,{0}", imreBase64Data);
+        }
+
+        public IActionResult SubmitCategory()
+        {
+            List<SelectListItem> myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
+            myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
+            ViewData["CategoryId"] = myList;
+            return View(new ProductViewModel());
         }
     }
 }
