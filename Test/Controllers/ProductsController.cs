@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Test.Data;
 using Test.Models;
@@ -38,6 +40,9 @@ namespace Test.Controllers
 
         public IActionResult Create()
         {
+            List<SelectListItem> myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
+            myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
+            ViewData["CategoryId"] = myList;
             return View(new ProductViewModel());
         }
 
@@ -45,6 +50,12 @@ namespace Test.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductViewModel viewModel)
         {
+            IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+            foreach (ModelError error in allErrors)
+            {
+                Console.WriteLine(error.ErrorMessage);
+                Console.WriteLine(error.Exception);
+            }
             if (ModelState.IsValid)
             {
                 viewModel.Product.Picture = ConvertIFormFileToByteArray(viewModel);

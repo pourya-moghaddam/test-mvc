@@ -15,4 +15,6 @@ public class Product
     public byte[]? Picture { get; set; }
     [Column(TypeName = "decimal(18, 2)")]
     public decimal Price { get; set; }
+    public int CategoryId { get; set; }
+    public string? CategoryFields { get; set; }
 }
