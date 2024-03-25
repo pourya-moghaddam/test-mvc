@@ -68,7 +68,8 @@ namespace Test.Controllers
             ViewBag.CategoryFields = categoryFields;
 
             // ProductViewModel productViewModel = new ProductViewModel();
-            // productViewModel.CategoryFields.Fields = new Dictionary<string, object>();
+            // productViewModel.CategoryFields = new CategoryFieldsModel();
+            // productViewModel.CategoryFields.Fields = new Dictionary<string, string>();
             // foreach (string field in categoryFields)
             // {
             //     productViewModel.CategoryFields.Fields.Add(field, null);
@@ -91,10 +92,17 @@ namespace Test.Controllers
                 Console.WriteLine(error.ErrorMessage);
                 Console.WriteLine(error.Exception);
             }
+            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
+            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
+            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
+            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
+            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
             if (ModelState.IsValid)
             {
                 viewModel.Product.Picture = ConvertIFormFileToByteArray(viewModel);
 
+                string jsonFields = JsonSerializer.Serialize(viewModel.CategoryFields.Fields);
+                Console.WriteLine(jsonFields);
                 viewModel.Product.CategoryFields = JsonSerializer.Serialize(viewModel.CategoryFields.Fields);
 
                 _context.Add(viewModel.Product);
