@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,5 +15,6 @@ namespace Test.Data
         }
 
         public DbSet<Test.Models.Product> Product { get; set; } = default!;
+        public DbSet<Test.Models.Category> Category { get; set; } = default!;
     }
 }
