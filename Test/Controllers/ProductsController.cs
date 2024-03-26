@@ -44,6 +44,7 @@ namespace Test.Controllers
             List<SelectListItem> myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
             myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
             ViewData["CategoryId"] = myList;
+            ViewData["CategoryId"] = categoryId;
             
             if (categoryId == null)
             {
@@ -55,6 +56,8 @@ namespace Test.Controllers
             {
                 return NotFound();
             }
+
+            ViewData["CategoryName"] = category.Name;
 
             string categoryFieldsString = category.Fields;
             Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
