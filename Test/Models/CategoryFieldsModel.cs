@@ -2,5 +2,5 @@
 
 public class CategoryFieldsModel
 {
-    public Dictionary<string, string> Fields { get; set; }
+    public Dictionary<string, object> Fields { get; set; }
 }

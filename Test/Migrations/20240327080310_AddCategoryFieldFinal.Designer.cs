@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Test.Data;
 
@@ -11,9 +12,11 @@ using Test.Data;
 namespace Test.Migrations
 {
     [DbContext(typeof(TestContext))]
-    partial class TestContextModelSnapshot : ModelSnapshot
+    [Migration("20240327080310_AddCategoryFieldFinal")]
+    partial class AddCategoryFieldFinal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,21 +25,6 @@ namespace Test.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CategoryCategoryField", b =>
-                {
-                    b.Property<int>("CategoriesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FieldsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CategoriesId", "FieldsId");
-
-                    b.HasIndex("FieldsId");
-
-                    b.ToTable("CategoryCategoryField");
-                });
-
             modelBuilder.Entity("Test.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -44,6 +32,9 @@ namespace Test.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Fields")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -111,21 +102,6 @@ namespace Test.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Product");
-                });
-
-            modelBuilder.Entity("CategoryCategoryField", b =>
-                {
-                    b.HasOne("Test.Models.Category", null)
-                        .WithMany()
-                        .HasForeignKey("CategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Test.Models.CategoryField", null)
-                        .WithMany()
-                        .HasForeignKey("FieldsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Test.Models.Category", b =>

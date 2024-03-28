@@ -35,19 +35,19 @@
         <td>
             @Html.DisplayFor(modelItem => item.Parent.Id)
         </td>
-        <td>
-            @{
-                if (item.Fields != null)
-                {
-                    var fields = String.Join(", ", JsonSerializer.Deserialize<string[]>(item.Fields));
-                    <p>@fields</p>
-                }
-                else
-                {
-                    Html.DisplayFor(modelItem => item.Fields);
-                }
-            }
-        </td>
+        @* <td> *@
+        @*     @{ *@
+        @*         if (item.Fields != null) *@
+        @*         { *@
+        @*             var fields = String.Join(", ", JsonSerializer.Deserialize<string[]>(item.Fields)); *@
+        @*             <p>@fields</p> *@
+        @*         } *@
+        @*         else *@
+        @*         { *@
+        @*             Html.DisplayFor(modelItem => item.Fields); *@
+        @*         } *@
+        @*     } *@
+        @* </td> *@
         <td>
             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
             <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

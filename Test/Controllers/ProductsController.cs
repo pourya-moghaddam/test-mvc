@@ -41,9 +41,9 @@ namespace Test.Controllers
 
         public async Task<IActionResult> Create(int? categoryId)
         {
-            List<SelectListItem> myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
-            myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
-            ViewData["CategoryId"] = myList;
+            // List<SelectListItem> myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
+            // myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
+            // ViewData["CategoryId"] = myList;
             ViewData["CategoryId"] = categoryId;
             
             if (categoryId == null)
@@ -59,16 +59,31 @@ namespace Test.Controllers
 
             ViewData["CategoryName"] = category.Name;
 
-            string categoryFieldsString = category.Fields;
-            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            Console.WriteLine(categoryFieldsString);
-            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            string[] categoryFields = JsonSerializer.Deserialize<string[]>(categoryFieldsString);
-            ViewBag.CategoryFields = categoryFields;
+            // string categoryFieldsString = category.Fields;
+            // List<string> categoryFields;
+            // if (categoryFieldsString != null)
+            // {
+            //     categoryFields = JsonSerializer.Deserialize<string[]>(categoryFieldsString).ToList();
+            // }
+            // else
+            // {
+            //     categoryFields = new List<string>();
+            // }
+            //
+            //
+            // var currentCategory = category;
+            // while (currentCategory.ParentId != null)
+            // {
+            //     currentCategory = await _context.Category.FindAsync(currentCategory.ParentId);
+            //     // currentCategory = await _context.Category.FindAsync(categoryId);
+            //     string[] currentCategoryFields = JsonSerializer.Deserialize<string[]>(currentCategory.Fields);
+            //     foreach (string field in currentCategoryFields)
+            //     {
+            //         categoryFields.Add(field);
+            //     }
+            //     
+            // }
+            // ViewBag.CategoryFields = categoryFields;
 
             // ProductViewModel productViewModel = new ProductViewModel();
             // productViewModel.CategoryFields = new CategoryFieldsModel();
@@ -85,21 +100,12 @@ namespace Test.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductViewModel viewModel)
         {
-            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
-            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
-            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
-            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
             IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
             foreach (ModelError error in allErrors)
             {
                 Console.WriteLine(error.ErrorMessage);
                 Console.WriteLine(error.Exception);
             }
-            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
-            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
-            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
-            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
-            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
             if (ModelState.IsValid)
             {
                 viewModel.Product.Picture = ConvertIFormFileToByteArray(viewModel);
@@ -225,9 +231,9 @@ namespace Test.Controllers
 
         public IActionResult SubmitCategory()
         {
-            List<SelectListItem> myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
-            myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
-            ViewData["CategoryId"] = myList;
+            List<SelectListItem> categories = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
+            categories.Insert(0, (new SelectListItem { Text = null, Value = null }));
+            ViewData["CategoryId"] = categories;
             return View(new ProductViewModel());
         }
     }

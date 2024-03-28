@@ -50,29 +50,36 @@ namespace Test.Controllers
         // GET: Categories/Create
         public IActionResult Create()
         {
-            List<SelectListItem> selectListItemList = new List<SelectListItem>();
-            selectListItemList.Add(
-                new SelectListItem {
-                    Selected = true, Text = string.Empty, Value = null
-            });
-            var testContext = _context.Category;
-            Category[] categoryArray = testContext.ToArray();
-            foreach (Category category in categoryArray)
-            {
-                selectListItemList.Add(
-                    new SelectListItem {
-                        Selected = false, Text = category.Name, Value = category.Id.ToString()
-                });
-            }
+            // List<SelectListItem> selectListItemList = new List<SelectListItem>();
+            // selectListItemList.Add(
+            //     new SelectListItem {
+            //         Selected = true, Text = string.Empty, Value = null
+            // });
+            // var testContext = _context.Category;
+            // Category[] categoryArray = testContext.ToArray();
+            // foreach (Category category in categoryArray)
+            // {
+            //     selectListItemList.Add(
+            //         new SelectListItem {
+            //             Selected = false, Text = category.Name, Value = category.Id.ToString()
+            //     });
+            // }
 
-            List<SelectListItem> myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
-            myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
-            ViewData["ParentId"] = myList;
+            List<SelectListItem> parentSelectList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
+            parentSelectList.Insert(0, (new SelectListItem { Text = null, Value = null }));
+            ViewData["ParentId"] = parentSelectList;
+
+            List<SelectListItem> fieldsSelectList = new List<SelectListItem>(new SelectList(_context.CategoryField, "Id", "Name"));
+            fieldsSelectList.Insert(0, (new SelectListItem { Text = null, Value = null }));
+            ViewData["FieldIds"] = fieldsSelectList;
+
+            Category category = new Category();
+            category.Fields = new List<CategoryField>();
             // SelectList selectList = new SelectList(selectListItemList);
             // ViewData["ParentId"] = new SelectList(_context.Category, "Id", "Name");
             // ViewData["ParentId"] = new SelectList(selectListItemList);
             
-            return View();
+            return View(category);
         }
 
         // POST: Categories/Create
@@ -97,10 +104,12 @@ namespace Test.Controllers
                 //     Console.WriteLine(item.Name);
                 // }
 
-                if (category.Fields != null)
-                {
-                    category.Fields = ConvertTextInputToJson(category.Fields);
-                }
+                // if (category.Fields != null)
+                // {
+                //     category.Fields = ConvertTextInputToJson(category.Fields);
+                // }
+                Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                foreach (var field in category.Fields) Console.WriteLine(field.Name);
                 _context.Add(category);
                 // _context.Update(parentCategory);
                 await _context.SaveChangesAsync();

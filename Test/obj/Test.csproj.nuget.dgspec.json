@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\sp\\Desktop\\Test\\test-mvc\\Test\\Test.csproj": {}
+    "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\Test.csproj": {}
   },
   "projects": {
-    "C:\\Users\\sp\\Desktop\\Test\\test-mvc\\Test\\Test.csproj": {
+    "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\Test.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\sp\\Desktop\\Test\\test-mvc\\Test\\Test.csproj",
+        "projectUniqueName": "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\Test.csproj",
         "projectName": "Test",
-        "projectPath": "C:\\Users\\sp\\Desktop\\Test\\test-mvc\\Test\\Test.csproj",
-        "packagesPath": "C:\\Users\\sp\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\sp\\Desktop\\Test\\test-mvc\\Test\\obj\\",
+        "projectPath": "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\Test.csproj",
+        "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\sp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -40,6 +40,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "BeginCollectionItemCore": {
+              "target": "Package",
+              "version": "[1.1.0, )"
+            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[8.0.3, )"

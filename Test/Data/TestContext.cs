@@ -14,7 +14,13 @@ namespace Test.Data
         {
         }
 
-        public DbSet<Test.Models.Product> Product { get; set; } = default!;
-        public DbSet<Test.Models.Category> Category { get; set; } = default!;
+        public DbSet<Test.Models.Product> Product { get; set; }
+        public DbSet<Test.Models.Category> Category { get; set; }
+        public DbSet<Test.Models.CategoryField> CategoryField { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

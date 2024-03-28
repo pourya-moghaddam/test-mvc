@@ -46,6 +46,18 @@
           }
         }
       },
+      "BeginCollectionItemCore/1.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net5.0/BeginCollectionItemCore.dll": {}
+        },
+        "runtime": {
+          "lib/net5.0/BeginCollectionItemCore.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "Humanizer/2.14.1": {
         "type": "package",
         "dependencies": {
@@ -2966,6 +2978,18 @@
         "azureicon.png",
         "lib/netstandard2.0/Azure.Identity.dll",
         "lib/netstandard2.0/Azure.Identity.xml"
+      ]
+    },
+    "BeginCollectionItemCore/1.1.0": {
+      "sha512": "2x4ISi+n2prReYCsY+Rj++9IHLsm+kNp+/p+3UKTS+t8FGP74zyDJ4YBy/NXBIPVaQhdVDbz76Pfjx/nDaPJWA==",
+      "type": "package",
+      "path": "begincollectionitemcore/1.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "begincollectionitemcore.1.1.0.nupkg.sha512",
+        "begincollectionitemcore.nuspec",
+        "lib/net5.0/BeginCollectionItemCore.dll"
       ]
     },
     "Humanizer/2.14.1": {
@@ -8147,6 +8171,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "BeginCollectionItemCore >= 1.1.0",
       "Microsoft.EntityFrameworkCore.SqlServer >= 8.0.3",
       "Microsoft.EntityFrameworkCore.Sqlite >= 8.0.3",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.3",
@@ -8154,19 +8179,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\sp\\.nuget\\packages\\": {}
+    "C:\\Users\\HP\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\sp\\Desktop\\Test\\test-mvc\\Test\\Test.csproj",
+      "projectUniqueName": "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\Test.csproj",
       "projectName": "Test",
-      "projectPath": "C:\\Users\\sp\\Desktop\\Test\\test-mvc\\Test\\Test.csproj",
-      "packagesPath": "C:\\Users\\sp\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\sp\\Desktop\\Test\\test-mvc\\Test\\obj\\",
+      "projectPath": "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\Test.csproj",
+      "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\sp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -8192,6 +8217,10 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "BeginCollectionItemCore": {
+            "target": "Package",
+            "version": "[1.1.0, )"
+          },
           "Microsoft.EntityFrameworkCore.SqlServer": {
             "target": "Package",
             "version": "[8.0.3, )"
