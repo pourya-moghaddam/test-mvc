@@ -11,5 +11,5 @@ public class Category
     public virtual Category? Parent { get; set; }
 
     public virtual ICollection<Category>? Children { get; set; }
-    public virtual IList<CategoryField> Fields { get; set; }
+    public virtual IList<CategoryField>? Fields { get; set; }
 }

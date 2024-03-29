@@ -73,13 +73,14 @@ namespace Test.Controllers
             fieldsSelectList.Insert(0, (new SelectListItem { Text = null, Value = null }));
             ViewData["FieldIds"] = fieldsSelectList;
 
-            Category category = new Category();
-            category.Fields = new List<CategoryField>();
+            CategoryViewModel viewModel = new CategoryViewModel();
+            // viewModel.Category = new Category();
+            viewModel.FieldIds = new List<int>();
             // SelectList selectList = new SelectList(selectListItemList);
             // ViewData["ParentId"] = new SelectList(_context.Category, "Id", "Name");
             // ViewData["ParentId"] = new SelectList(selectListItemList);
             
-            return View(category);
+            return View(viewModel);
         }
 
         // POST: Categories/Create
@@ -87,7 +88,8 @@ namespace Test.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,ParentId,Fields")] Category category)
+        // public async Task<IActionResult> Create([Bind("Id,Name,ParentId,Fields")] Category category)
+        public async Task<IActionResult> Create(CategoryViewModel viewModel)
         {
             IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
             foreach (ModelError error in allErrors)
@@ -109,14 +111,28 @@ namespace Test.Controllers
                 //     category.Fields = ConvertTextInputToJson(category.Fields);
                 // }
                 Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                foreach (var field in category.Fields) Console.WriteLine(field.Name);
-                _context.Add(category);
+                viewModel.Category.Fields = new List<CategoryField>();
+                foreach (int id in viewModel.FieldIds)
+                {
+                    if (id == null)
+                    {
+                        return NotFound();
+                    }
+                    var categoryField = await _context.CategoryField.FindAsync(id);
+                    if (categoryField == null)
+                    {
+                        return NotFound();
+                    }
+                    viewModel.Category.Fields.Add(categoryField);
+                }
+                foreach (var field in viewModel.Category.Fields) Console.WriteLine(field.Name);
+                _context.Add(viewModel.Category);
                 // _context.Update(parentCategory);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ParentId"] = new SelectList(_context.Category, "Id", "Id", category.ParentId);
-            return View(category);
+            // ViewData["ParentId"] = new SelectList(_context.Category, "Id", "Id", category.ParentId);
+            return View(viewModel);
         }
 
         // GET: Categories/Edit/5

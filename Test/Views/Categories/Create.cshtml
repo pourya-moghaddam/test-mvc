@@ -1,4 +1,4 @@
-@model Test.Models.Category
+@model Test.Models.CategoryViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -15,13 +15,13 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control"/>
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Category.Name" class="control-label"></label>
+                <input asp-for="Category.Name" class="form-control"/>
+                <span asp-validation-for="Category.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ParentId" class="control-label"></label>
-                <select asp-for="ParentId" class="form-control" asp-items="ViewBag.ParentId"></select>
+                <label asp-for="Category.ParentId" class="control-label"></label>
+                <select asp-for="Category.ParentId" class="form-control" asp-items="ViewBag.ParentId"></select>
             </div>
             <div class="form-group">
                 <label class="control-label"></label>
@@ -36,16 +36,16 @@
             @*     </div> *@
             @* } *@
             <div class="form-group">
-                @for (var i = 0; i < Model.Fields.Count; i++)
+                @for (var i = 0; i < Model.FieldIds.Count; i++)
                 {
-                    <input type="text" name="Names[@i]" value="@Model.Fields[i]"/>
+                    <input type="text" name="Names[@i]" value="@Model.FieldIds[i]"/>
                 }
             </div>
             <!-- Button to add more input fields -->
             <button type="button" onclick="addInput()">Add Name</button>
 
             <!-- Hidden input to keep track of the current count -->
-            <input type="hidden" id="nameCount" name="nameCount" value="@Model.Fields.Count"/>
+            <input type="hidden" id="nameCount" name="nameCount" value="@Model.FieldIds.Count"/>
             
             <select ></select>
 
@@ -77,14 +77,15 @@
             // input.type = "text";
             // input.name = "Fields[" + count + "].Name";
             // input.placeholder = "Enter a name";
-            var select = document.createElement("select");
-            select.name = "Fields[" + count + "].Id"; // Set the name attribute
-            select.className = "form-control";
-            select.setAttribute("asp-items", "@ViewData["FieldIds"]"); // Set the asp-items attribute
+            // var select = document.createElement("select");
+            // select.name = "Fields[" + count + "].Id"; // Set the name attribute
+            // select.className = "form-control";
+            // select.setAttribute("asp-items", "@ViewData["FieldIds"]"); // Set the asp-items attribute
             // document.getElementById("form").appendChild(select);
             var originalElement = document.getElementById("fields-select");
             var clonedElement = originalElement.cloneNode(true);
-            clonedElement.name = "Fields[" + count + "].Id";
+            clonedElement.name = "FieldIds[" + count + "]";
+            clonedElement.hidden = true;
             
             // Optionally modify the cloned element (e.g., change its ID)
             clonedElement.id = "fields-select-clone";
