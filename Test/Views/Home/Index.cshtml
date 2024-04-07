@@ -8,16 +8,15 @@
     <div class="row">
         <div class="row col row-cols-1 row-cols-md-2 g-4" style="margin-left: 10vw; margin-right: 10vw;">
             @foreach (var item in Model)
-            {
+            { 
                 <div class="col">
                     <div class="card h-100">
                         @{
                             if (item.Picture != null)
                             {
-                                string imreBase64Data = Convert.ToBase64String(item.Picture);
-                                string imgDataUrl = string.Format("data:image/png;base64,{0}", imreBase64Data);
-                                <img src="@imgDataUrl" class="card-img-top" alt="Hollywood Sign on The Hill"/>
-
+                                var imreBase64Data = Convert.ToBase64String(item.Picture);
+                                var imgDataUrl = string.Format("data:image/png;base64,{0}", imreBase64Data);
+                                <img src="@imgDataUrl" class="card-img-top" alt=""/>
                             }
                         }
                         <div class="card-body">
@@ -32,8 +31,23 @@
             }
         </div>
         <div class="col-3" style="margin-top: 4vw;">
+            
             <h2>Filter</h2>
-            <br>
+            <br/>
+            <p>Category</p>
+            @{
+                var allButtonClass = (ViewBag.CurrentCategoryId == 0) ? "btn-secondary" : "btn-light";
+                <input type="button" class="btn @(allButtonClass) category-button" value="All"
+                       onclick="location.href='@Url.Action("Index", "Home")'"/>
+                for (int i = 0; i < ViewBag.Categories.Length; i++)
+                {
+                    var buttonClass = (ViewBag.CurrentCategoryId == ViewBag.Categories[i].Id) ? "btn-secondary" : "btn-light";
+                    <input type="button" class="btn @(buttonClass) category-button" value="@ViewBag.Categories[i].Name"
+                           onclick="location.href='@Url.Action("Index", "Home", new { categoryId = ViewBag.Categories[i].Id })'"/>
+                }
+            }
+            <hr class="hr"/>
+            
             <form asp-controller="Home" asp-action="Index">
                 <div class="form-group">
                     <label>Name</label>
@@ -47,6 +61,63 @@
                     <label>Max price</label>
                     <input type="number" class="form-control"placeholder="Maximum price" name="maxPrice">
                 </div>
+                <div class="form-group" hidden>
+                    <label>Current Category Id</label>
+                    <input type="number" class="form-control"placeholder="Maximum price" name="categoryId" value="@ViewBag.CurrentCategoryId">
+                </div>
+                @{
+                    if (ViewBag.CategoryFields != null)
+                    for (int i = 0; i < ViewBag.CategoryFields.Count; i++)
+                    {
+                        <hr class="hr"/>
+                        <div class="form-group">
+                            <label>@ViewBag.CategoryFields[i].Name</label>
+                            @for (int j = 0; j < ViewBag.CategoryFields[i].Values.Count; j++)
+                            {
+                                bool isChecked = true;
+                                if (ViewBag.FieldValues.Length > 0)
+                                {
+                                    for (int k = 0; k < ViewBag.FieldValues[i][ViewBag.CategoryFields[i].Id].Length; k++)
+                                    {
+                                        if (ViewBag.FieldValues[i][ViewBag.CategoryFields[i].Id][k] == ViewBag.CategoryFields[i].Values[j])
+                                        {
+                                            isChecked = true;
+                                            break;
+                                        }
+                                        isChecked = false;
+                                    }
+                                }
+                                else
+                                {
+                                    isChecked = true;
+                                }
+                                <div class="form-check">
+                                    @{
+                                        if (isChecked)
+                                        {
+                                            <input class="form-check-input" type="checkbox"
+                                                   value="@ViewBag.CategoryFields[i].Values[j]"
+                                                   id="checkbox1" name="fieldValues[@i][@ViewBag.CategoryFields[i].Id]"
+                                                   checked
+                                            >
+                                        }
+                                        else
+                                        {
+                                            <input class="form-check-input" type="checkbox"
+                                                   value="@ViewBag.CategoryFields[i].Values[j]"
+                                                   id="checkbox1" name="fieldValues[@i][@ViewBag.CategoryFields[i].Id]"
+                                            >
+                                        }
+                                    }
+                                    <label class="form-check-label" for="checkbox1">
+                                        @ViewBag.CategoryFields[i].Values[j]
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+                <br/>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>

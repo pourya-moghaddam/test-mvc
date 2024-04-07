@@ -11,7 +11,6 @@
 <hr/>
 <div class="row">
     <div class="col-md-4">
-        <button>Another One</button>
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -21,45 +20,19 @@
             </div>
             <div class="form-group">
                 <label asp-for="Category.ParentId" class="control-label"></label>
-                <select asp-for="Category.ParentId" class="form-control" asp-items="ViewBag.ParentId"></select>
+                <select asp-for="Category.ParentId" class="form-control" asp-items="ViewBag.ParentIds"></select>
+                <span asp-validation-for="Category.ParentId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label"></label>
-                <select id="fields-select" class="form-control" asp-items="ViewBag.FieldIds"></select>
+                <select id="fields-select" class="form-control" asp-items="ViewBag.FieldIds" hidden></select>
             </div>
-            @* @foreach (var field in Model.Fields) *@
-            @* { *@
-            @*     <div class="form-group"> *@
-            @*         <label asp-for="@field.Name" class="control-label"></label> *@
-            @*         <input asp-for="@field.Name" class="form-control name"/> *@
-            @*         $1$ <span asp-validation-for="Name" class="text-danger"></span> #1# *@
-            @*     </div> *@
-            @* } *@
             <div class="form-group">
-                @for (var i = 0; i < Model.FieldIds.Count; i++)
-                {
-                    <input type="text" name="Names[@i]" value="@Model.FieldIds[i]"/>
-                }
+                <button type="button" class="btn btn-success" onclick="addFieldSelect()">Add Field</button>
+                <input type="hidden" id="field-count" name="fieldCount" value="@Model.FieldIds.Count"/>
             </div>
-            <!-- Button to add more input fields -->
-            <button type="button" onclick="addInput()">Add Name</button>
-
-            <!-- Hidden input to keep track of the current count -->
-            <input type="hidden" id="nameCount" name="nameCount" value="@Model.FieldIds.Count"/>
-            
-            <select ></select>
-
-            @* <button id="addRow" type="button" class="btn btn-info">Add</button>   *@
-            @* <form method="post">   *@
-            @*     <div id="newRow">   *@
-            @*         <input type="hidden" id="total" value="0" />   *@
-            @*     </div>   *@
-            @*     <input type="submit" class="btn btn-primary"  value="Post" />   *@
-            @* </form>  *@
-            <div class="form-group">
+            <div id="submit-button" class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary"/>
             </div>
-
         </form>
     </div>
 </div>
@@ -71,36 +44,19 @@
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
     <script>
-        function addInput() {
-            var count = parseInt(document.getElementById("nameCount").value);
-            // var input = document.createElement("input");
-            // input.type = "text";
-            // input.name = "Fields[" + count + "].Name";
-            // input.placeholder = "Enter a name";
-            // var select = document.createElement("select");
-            // select.name = "Fields[" + count + "].Id"; // Set the name attribute
-            // select.className = "form-control";
-            // select.setAttribute("asp-items", "@ViewData["FieldIds"]"); // Set the asp-items attribute
-            // document.getElementById("form").appendChild(select);
+        function addFieldSelect() {
+            var count = parseInt(document.getElementById("field-count").value);
+            
             var originalElement = document.getElementById("fields-select");
             var clonedElement = originalElement.cloneNode(true);
             clonedElement.name = "FieldIds[" + count + "]";
-            clonedElement.hidden = true;
+            clonedElement.hidden = false;
+            var clonedElementContainer = document.createElement("div");
+            clonedElementContainer.class = "form-group";
+            clonedElementContainer.appendChild(clonedElement);
             
-            // Optionally modify the cloned element (e.g., change its ID)
-            clonedElement.id = "fields-select-clone";
-            
-            // Append the cloned element to the DOM
-            // document.body.appendChild(clonedElement);
-            document.querySelector("form").appendChild(clonedElement);
-            document.getElementById("nameCount").value = count + 1;
+            document.querySelector("form").insertBefore(clonedElementContainer, document.getElementById("submit-button"));
+            document.getElementById("field-count").value = count + 1;
         }
     </script>
 }
-@* @code *@
-@* { *@
-@*     private void AddNew() *@
-@*     { *@
-@*         Model.Fields.Add(new CategoryField()); *@
-@*     } *@
-@* } *@

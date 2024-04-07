@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Test.Data;
 using Test.Models;
@@ -19,20 +14,17 @@ namespace Test.Controllers
             _context = context;
         }
 
-        // GET: CategoryFields
         public async Task<IActionResult> Index()
         {
             return View(await _context.CategoryField.ToListAsync());
         }
 
-        // GET: CategoryFields/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
             var categoryField = await _context.CategoryField
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (categoryField == null)
@@ -46,84 +38,105 @@ namespace Test.Controllers
         // GET: CategoryFields/Create
         public IActionResult Create()
         {
-            return View();
+            // CategoryField categoryField = new CategoryField
+            // {
+            //     Values = new List<string>()
+            // };
+
+            CategoryFieldViewModel viewModel = new CategoryFieldViewModel
+            {
+                FieldValues = new List<string>()
+            };
+            
+            return View(viewModel);
         }
 
-        // POST: CategoryFields/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] CategoryField categoryField)
+        public async Task<IActionResult> Create(CategoryFieldViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(categoryField);
+                viewModel.CategoryField.Values = new List<string>();
+
+                if (viewModel.FieldValues != null)
+                {
+                    foreach (var value in viewModel.FieldValues)
+                    {
+                        viewModel.CategoryField.Values.Add(value);
+                    }
+                }
+                _context.Add(viewModel.CategoryField);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(categoryField);
+            viewModel.FieldValues = new List<string>();
+            return View(viewModel);
         }
 
-        // GET: CategoryFields/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
             var categoryField = await _context.CategoryField.FindAsync(id);
             if (categoryField == null)
             {
                 return NotFound();
             }
-            return View(categoryField);
-        }
 
-        // POST: CategoryFields/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+            CategoryFieldViewModel viewModel = new CategoryFieldViewModel
+            {
+                CategoryField = categoryField,
+                FieldValues = new List<string>()
+            };
+
+            return View(viewModel);
+        }
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] CategoryField categoryField)
+        public async Task<IActionResult> Edit(int id, CategoryFieldViewModel viewModel)
         {
-            if (id != categoryField.Id)
+            if (id != viewModel.CategoryField.Id)
+            {
+                return NotFound();
+            }
+            
+            var categoryField = await _context.CategoryField.FindAsync(id);
+            if (categoryField == null)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
+                if (viewModel.FieldValues != null)
                 {
-                    _context.Update(categoryField);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryFieldExists(categoryField.Id))
+                    foreach (var value in viewModel.FieldValues)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        categoryField.Values?.Add(value);
                     }
                 }
+                categoryField.Name = viewModel.CategoryField.Name;
+                
+                _context.Update(categoryField);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(categoryField);
+
+            viewModel.FieldValues = new List<string>();
+            
+            return View(viewModel);
         }
 
-        // GET: CategoryFields/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
             var categoryField = await _context.CategoryField
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (categoryField == null)
@@ -134,7 +147,6 @@ namespace Test.Controllers
             return View(categoryField);
         }
 
-        // POST: CategoryFields/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -144,14 +156,8 @@ namespace Test.Controllers
             {
                 _context.CategoryField.Remove(categoryField);
             }
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool CategoryFieldExists(int id)
-        {
-            return _context.CategoryField.Any(e => e.Id == id);
         }
     }
 }

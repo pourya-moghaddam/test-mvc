@@ -15,7 +15,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
-            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.Values)
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -23,6 +25,13 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @{
+                    var fieldValues = item.Values;
+                    var stringFieldValues = string.Join(", ", fieldValues);
+                }
+                @Html.DisplayFor(modelItem => stringFieldValues)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

@@ -1,4 +1,4 @@
-@model Test.Models.CategoryField
+@model Test.Models.CategoryFieldViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,11 +13,15 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="CategoryField.Name" class="control-label"></label>
+                <input asp-for="CategoryField.Name" class="form-control" />
+                <span asp-validation-for="CategoryField.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <button type="button" class="btn btn-success" onclick="addValueInput()">Add Value</button>
+                <input type="hidden" id="value-count" name="valueCount" value="@Model.FieldValues.Count"/>
+            </div>
+            <div id="submit-button" class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -28,3 +32,23 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        function addValueInput() {
+            let count = parseInt(document.getElementById("value-count").value);
+            
+            let input = document.createElement("input");
+            input.type = "text";
+            input.name = "FieldValues[" + count + "]";
+            input.className = "form-control";
+            input.placeholder = "Enter a value";
+            let inputContatiner = document.createElement("div");
+            inputContatiner.class = "form-group";
+            inputContatiner.appendChild(input);
+            
+            document.querySelector("form").insertBefore(inputContatiner, document.getElementById("submit-button"));
+            document.getElementById("value-count").value = count + 1;
+        }
+    </script>
+}

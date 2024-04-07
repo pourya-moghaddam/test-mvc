@@ -38,6 +38,38 @@
                 <input asp-for="Product.Price" class="form-control" />
                 <span asp-validation-for="Product.Price" class="text-danger"></span>
             </div>
+            @{
+                            // foreach (CategoryField field in ViewBag.CategoryFields)
+                            // {
+                            //     FieldValuePair fieldValuePair = new FieldValuePair();
+                            //     fieldValuePair.FieldId = field.Id;
+                            //     Model.Product.FieldValuePairs.Add(fieldValuePair);
+                            // }
+            
+                            for (int i = 0; i < Model.Product.FieldValuePairs.Count; i++)
+                            {
+                                // Console.WriteLine(Model.Product.FieldValuePairs[i].FieldId);
+                                // Model.Product.FieldValuePairs.Add(new FieldValuePair());
+                                // Model.Product.FieldValuePairs[i].FieldId = ViewBag.CategoryFields[i].Id;
+                                var selectList = (List<SelectListItem>?)ViewData[$"{ViewBag.CategoryFields[i].Name}Values"];
+                                <div class="form-group" hidden>
+                                    <label asp-for="Product.FieldValuePairs[i].FieldId" class="control-label"></label>
+                                    <input asp-for="Product.FieldValuePairs[i].FieldId" class="form-control" value="@ViewBag.CategoryFields[i].Id"/>
+                                    <span asp-validation-for="Product.FieldValuePairs[i].FieldId" class="text-danger"></span>
+                                </div>
+                                @* <div class="form-group"> *@
+                                @*     <label asp-for="Product.FieldValuePairs[i].Value" class="control-label"></label> *@
+                                @*     <input asp-for="Product.FieldValuePairs[i].Value" class="form-control"/> *@
+                                @*     <span asp-validation-for="Product.FieldValuePairs[i].Value" class="text-danger"></span> *@
+                                @* </div> *@
+                                <div class="form-group">
+                                    <label class="control-label">@ViewBag.CategoryFields[i].Name</label>
+                                    <select asp-for="Product.FieldValuePairs[i].Value" class="form-control" asp-items="@selectList"></select>
+                                    <span asp-validation-for="Product.FieldValuePairs[i].Value" class="text-danger"></span>
+                                </div>
+                            }
+                            
+                        }
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

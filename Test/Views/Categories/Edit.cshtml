@@ -1,4 +1,4 @@
-@model Test.Models.Category
+@model Test.Models.CategoryViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,18 +13,43 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Category.Id" />
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Category.Name" class="control-label"></label>
+                <input asp-for="Category.Name" class="form-control" />
+                <span asp-validation-for="Category.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ParentId" class="control-label"></label>
-                <select asp-for="ParentId" class="form-control" asp-items="ViewBag.ParentId"></select>
-                <span asp-validation-for="ParentId" class="text-danger"></span>
+                <label asp-for="Category.ParentId" class="control-label"></label>
+                <select asp-for="Category.ParentId" class="form-control" asp-items="ViewBag.ParentIds"></select>
+                <span asp-validation-for="Category.ParentId" class="text-danger"></span>
+            </div>
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Category.Fields)
+                </dt>
+                <dd class="col-sm-10">
+                    @{
+                        var fields = Model.Category.Fields;
+                        var fieldNames = new List<string>();
+                        if (fields != null)
+                        {
+                            fieldNames.AddRange(fields.Select(field => field.Name));
+                        }
+
+                        var stringFieldNames = string.Join(", ", fieldNames);
+                    }
+                    @Html.DisplayFor(model => stringFieldNames)
+                </dd>
+            </dl>
+            <div class="form-group">
+                <select id="fields-select" class="form-control" asp-items="ViewBag.FieldIds" hidden></select>
             </div>
             <div class="form-group">
+                <button type="button" class="btn btn-success" onclick="addFieldSelect()">Add Field</button>
+                <input type="hidden" id="field-count" name="fieldCount" value="0"/>
+            </div>
+            <div id="submit-button" class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -37,4 +62,20 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function addFieldSelect() {
+        var count = parseInt(document.getElementById("field-count").value);
+                
+        var originalElement = document.getElementById("fields-select");
+        var clonedElement = originalElement.cloneNode(true);
+        clonedElement.name = "FieldIds[" + count + "]";
+        clonedElement.hidden = false;
+        var clonedElementContainer = document.createElement("div");
+        clonedElementContainer.class = "form-group";
+        clonedElementContainer.appendChild(clonedElement);
+                
+        document.querySelector("form").insertBefore(clonedElementContainer, document.getElementById("submit-button"));
+        document.getElementById("field-count").value = count + 1;
+       }
+    </script>
 }

@@ -1,7 +1,9 @@
-﻿namespace Test.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Test.Models;
 
 public class CategoryViewModel
 {
     public Category Category { get; set; }
-    public List<int> FieldIds { get; set; }
+    public List<int>? FieldIds { get; set; }
 }

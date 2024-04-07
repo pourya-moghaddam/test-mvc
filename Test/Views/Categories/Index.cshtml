@@ -1,4 +1,3 @@
-@using System.Text.Json
 @model IEnumerable<Test.Models.Category>
 
 @{
@@ -33,21 +32,21 @@
             @Html.DisplayFor(modelItem => item.Name)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Parent.Id)
+            @Html.DisplayFor(modelItem => item.Parent!.Name)
         </td>
-        @* <td> *@
-        @*     @{ *@
-        @*         if (item.Fields != null) *@
-        @*         { *@
-        @*             var fields = String.Join(", ", JsonSerializer.Deserialize<string[]>(item.Fields)); *@
-        @*             <p>@fields</p> *@
-        @*         } *@
-        @*         else *@
-        @*         { *@
-        @*             Html.DisplayFor(modelItem => item.Fields); *@
-        @*         } *@
-        @*     } *@
-        @* </td> *@
+        <td>
+            @{
+                var fields = item.Fields;
+                var fieldNames = new List<string>();
+                if (fields != null)
+                {
+                    fieldNames.AddRange(fields.Select(field => field.Name));
+                }
+
+                var stringFieldNames = string.Join(", ", fieldNames);
+            }
+            @Html.DisplayFor(modelItem => stringFieldNames)
+        </td>
         <td>
             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
             <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

@@ -8179,19 +8179,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\HP\\.nuget\\packages\\": {}
+    "C:\\Users\\sp\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\Test.csproj",
+      "projectUniqueName": "C:\\Users\\sp\\Desktop\\test-mvc\\test-mvc\\Test\\Test.csproj",
       "projectName": "Test",
-      "projectPath": "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\Test.csproj",
-      "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\HP\\Desktop\\testt\\test-mvc\\Test\\obj\\",
+      "projectPath": "C:\\Users\\sp\\Desktop\\test-mvc\\test-mvc\\Test\\Test.csproj",
+      "packagesPath": "C:\\Users\\sp\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\sp\\Desktop\\test-mvc\\test-mvc\\Test\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\sp\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

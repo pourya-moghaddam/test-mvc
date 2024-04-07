@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,6 +20,24 @@ namespace Test.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var categoryIdNamePairs = new List<KeyValuePair<int, string>>();
+            var products = _context.Product;
+            foreach (var product in products)
+            {
+                var category = await _context.Category
+                    .FirstOrDefaultAsync(c => c.Id == product.CategoryId);
+                if (category != null)
+                {
+                    var categoryName = category?.Name;
+                    var idNamePair = new KeyValuePair<int, string>(product.CategoryId, categoryName);
+                    if (!categoryIdNamePairs.Contains(idNamePair))
+                    {
+                        categoryIdNamePairs.Add(idNamePair);
+                    }
+                }
+            }
+            ViewData["CategoryIdNamePairs"] = categoryIdNamePairs;
+            
             return View(await _context.Product.ToListAsync());
         }
 
@@ -30,89 +49,94 @@ namespace Test.Controllers
             }
 
             var product = await _context.Product
+                .Include(p => p.FieldValuePairs)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
 
+            var fieldValuePairs = product.FieldValuePairs;
+            var fieldNameValuePairs = new List<KeyValuePair<string, string>>();
+            for (int i = 0; i < fieldValuePairs.Count; i++)
+            {
+                var field = await _context.CategoryField
+                    .FirstOrDefaultAsync(f => f.Id == fieldValuePairs[i].FieldId);
+                if (field != null)
+                {
+                    fieldNameValuePairs.Add(new KeyValuePair<string, string>(field?.Name, fieldValuePairs[i].Value));
+                }
+            }
+
+            var category = await _context.Category
+                .FirstOrDefaultAsync(c => c.Id == product.CategoryId);
+            var categoryName = category?.Name;
+
+            ViewData["CategoryName"] = categoryName;
+            ViewData["FieldNameValuePairs"] = fieldNameValuePairs;
+
             return View(product);
         }
 
-        public async Task<IActionResult> Create(int? categoryId)
+        public IActionResult Create(int? categoryId)
         {
-            // List<SelectListItem> myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
-            // myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
-            // ViewData["CategoryId"] = myList;
-            ViewData["CategoryId"] = categoryId;
+            var myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
+            myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
+            ViewData["CategoryId"] = myList;
             
-            if (categoryId == null)
+            var viewModel = new ProductViewModel
             {
-                return NotFound();
+                Product = new Product
+                {
+                    FieldValuePairs = new List<FieldValuePair>()
+                }
+            };
+
+            if (categoryId != null)
+            {
+                ViewData["CurrentCategoryId"] = categoryId;
+                
+                var category = _context.Category
+                    .Include(c => c.Fields)
+                    .FirstOrDefault(c => c.Id == categoryId);
+
+                if (category == null)
+                {
+                    return NotFound();
+                }
+
+                ViewData["CategoryName"] = category.Name;
+
+                var categoryFields = GetCategoryFields(categoryId);
+                if (categoryFields == null)
+                {
+                    return NotFound();
+                }
+
+                ViewData["CategoryFields"] = categoryFields;
+
+                if (categoryFields != null)
+                {
+                    for (int i = 0; i < categoryFields.Count; i++)
+                    {
+                        var fieldValuePair = new FieldValuePair();
+                        viewModel.Product.FieldValuePairs.Add(fieldValuePair);
+                    }
+                }
+
+                SetFieldValues(categoryFields);
             }
 
-            var category = await _context.Category.FindAsync(categoryId);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            ViewData["CategoryName"] = category.Name;
-
-            // string categoryFieldsString = category.Fields;
-            // List<string> categoryFields;
-            // if (categoryFieldsString != null)
-            // {
-            //     categoryFields = JsonSerializer.Deserialize<string[]>(categoryFieldsString).ToList();
-            // }
-            // else
-            // {
-            //     categoryFields = new List<string>();
-            // }
-            //
-            //
-            // var currentCategory = category;
-            // while (currentCategory.ParentId != null)
-            // {
-            //     currentCategory = await _context.Category.FindAsync(currentCategory.ParentId);
-            //     // currentCategory = await _context.Category.FindAsync(categoryId);
-            //     string[] currentCategoryFields = JsonSerializer.Deserialize<string[]>(currentCategory.Fields);
-            //     foreach (string field in currentCategoryFields)
-            //     {
-            //         categoryFields.Add(field);
-            //     }
-            //     
-            // }
-            // ViewBag.CategoryFields = categoryFields;
-
-            // ProductViewModel productViewModel = new ProductViewModel();
-            // productViewModel.CategoryFields = new CategoryFieldsModel();
-            // productViewModel.CategoryFields.Fields = new Dictionary<string, string>();
-            // foreach (string field in categoryFields)
-            // {
-            //     productViewModel.CategoryFields.Fields.Add(field, null);
-            // }
-            
-            return View(new ProductViewModel());
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductViewModel viewModel)
         {
-            IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
-            foreach (ModelError error in allErrors)
-            {
-                Console.WriteLine(error.ErrorMessage);
-                Console.WriteLine(error.Exception);
-            }
             if (ModelState.IsValid)
             {
                 viewModel.Product.Picture = ConvertIFormFileToByteArray(viewModel);
-
-                string jsonFields = JsonSerializer.Serialize(viewModel.CategoryFields.Fields);
-                Console.WriteLine(jsonFields);
-                viewModel.Product.CategoryFields = JsonSerializer.Serialize(viewModel.CategoryFields.Fields);
 
                 _context.Add(viewModel.Product);
                 await _context.SaveChangesAsync();
@@ -137,17 +161,29 @@ namespace Test.Controllers
             {
                 return NotFound();
             }
-
-            var product = await _context.Product.FindAsync(id);
+            var product = await _context.Product
+                .Include(p => p.FieldValuePairs)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
+            
+            var categoryFields = GetCategoryFields(product.CategoryId);
+            if (categoryFields == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["CategoryFields"] = categoryFields;
+            
+            SetFieldValues(categoryFields);
 
             var model = new ProductViewModel
             {
                 Product = product
             };
+            
             return View(model);
         }
 
@@ -235,6 +271,44 @@ namespace Test.Controllers
             categories.Insert(0, (new SelectListItem { Text = null, Value = null }));
             ViewData["CategoryId"] = categories;
             return View(new ProductViewModel());
+        }
+
+        private List<CategoryField>? GetCategoryFields(int? categoryId)
+        {
+            var category = _context.Category
+                .Include(c => c.Fields)
+                .FirstOrDefault(c => c.Id == categoryId);
+
+            if (category == null)
+            {
+                return null;
+            }
+                
+            var categoryFields = category.Fields?.ToList();
+
+            var currentCategory = category;
+            while (currentCategory?.ParentId != null)
+            {
+                currentCategory = _context.Category
+                    .Include(c => c.Fields) // Eager loading
+                    .FirstOrDefault(c => c.Id == currentCategory.ParentId);
+                categoryFields?.AddRange(currentCategory.Fields);
+            }
+
+            return categoryFields;
+        }
+
+        private void SetFieldValues(List<CategoryField>? categoryFields)
+        {
+            List<SelectListItem> valuesSelectList;
+            if (categoryFields != null)
+            {
+                foreach (var field in categoryFields)
+                {
+                    valuesSelectList = new List<SelectListItem>(new SelectList(field.Values));
+                    ViewData[$"{field.Name}Values"] = valuesSelectList;
+                }
+            }
         }
     }
 }

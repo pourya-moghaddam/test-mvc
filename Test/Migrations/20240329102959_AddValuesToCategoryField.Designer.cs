@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Test.Data;
 
@@ -11,9 +12,11 @@ using Test.Data;
 namespace Test.Migrations
 {
     [DbContext(typeof(TestContext))]
-    partial class TestContextModelSnapshot : ModelSnapshot
+    [Migration("20240329102959_AddValuesToCategoryField")]
+    partial class AddValuesToCategoryField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,31 +83,6 @@ namespace Test.Migrations
                     b.ToTable("CategoryField");
                 });
 
-            modelBuilder.Entity("Test.Models.FieldValuePair", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FieldId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("FieldValuePair");
-                });
-
             modelBuilder.Entity("Test.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -112,6 +90,9 @@ namespace Test.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CategoryFields")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -163,21 +144,9 @@ namespace Test.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Test.Models.FieldValuePair", b =>
-                {
-                    b.HasOne("Test.Models.Product", null)
-                        .WithMany("FieldValuePairs")
-                        .HasForeignKey("ProductId");
-                });
-
             modelBuilder.Entity("Test.Models.Category", b =>
                 {
                     b.Navigation("Children");
-                });
-
-            modelBuilder.Entity("Test.Models.Product", b =>
-                {
-                    b.Navigation("FieldValuePairs");
                 });
 #pragma warning restore 612, 618
         }
