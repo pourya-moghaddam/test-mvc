@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -148,15 +146,18 @@ namespace Test.Controllers
 
         private static byte[] ConvertIFormFileToByteArray(ProductViewModel viewModel)
         {
-            using var ms = new MemoryStream();
-            viewModel.ImageFile.File?.CopyTo(ms);
-            var fileBytes = ms.ToArray();
+            using var memoryStream = new MemoryStream();
+            viewModel.ImageFile.File?.CopyTo(memoryStream);
 
-            return fileBytes;
+            return memoryStream.ToArray();
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
+            var myList = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
+            myList.Insert(0, (new SelectListItem { Text = null, Value = null }));
+            ViewData["CategoryId"] = myList;
+            
             if (id == null)
             {
                 return NotFound();
@@ -169,6 +170,25 @@ namespace Test.Controllers
                 return NotFound();
             }
             
+            var viewModel = new ProductViewModel
+            {
+                Product = product
+            };
+            viewModel.Product.FieldValuePairs = new List<FieldValuePair>();
+            
+            ViewData["CurrentCategoryId"] = product.CategoryId;
+                
+            var category = _context.Category
+                .Include(c => c.Fields)
+                .FirstOrDefault(c => c.Id == product.CategoryId);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["CategoryName"] = category.Name;
+
             var categoryFields = GetCategoryFields(product.CategoryId);
             if (categoryFields == null)
             {
@@ -176,21 +196,31 @@ namespace Test.Controllers
             }
 
             ViewData["CategoryFields"] = categoryFields;
-            
-            SetFieldValues(categoryFields);
 
-            var model = new ProductViewModel
+            if (categoryFields != null)
             {
-                Product = product
-            };
+                for (int i = 0; i < categoryFields.Count; i++)
+                {
+                    var fieldValuePair = new FieldValuePair();
+                    viewModel.Product.FieldValuePairs.Add(fieldValuePair);
+                }
+            }
+
+            SetFieldValues(categoryFields);
             
-            return View(model);
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProductViewModel viewModel)
         {
+            IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+            foreach (ModelError error in allErrors)
+            {
+                Console.WriteLine(error.ErrorMessage);
+                Console.WriteLine(error.Exception);
+            }
             if (id != viewModel.Product.Id)
             {
                 return NotFound();
@@ -201,6 +231,8 @@ namespace Test.Controllers
                 try
                 {
                     viewModel.Product.Picture = ConvertIFormFileToByteArray(viewModel);
+                    var temp = viewModel.Product.FieldValuePairs;
+                    viewModel.Product.FieldValuePairs = new List<FieldValuePair>();
 
                     _context.Update(viewModel.Product);
                     await _context.SaveChangesAsync();
@@ -229,7 +261,6 @@ namespace Test.Controllers
             {
                 return NotFound();
             }
-
             var product = await _context.Product
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
@@ -244,12 +275,15 @@ namespace Test.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Product.FindAsync(id);
-            if (product != null)
+            var product = await _context.Product
+                .Include(p => p.FieldValuePairs)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            
+            foreach (var fieldValuePair in product?.FieldValuePairs)
             {
-                _context.Product.Remove(product);
+                _context.FieldValuePair.Remove(fieldValuePair);
             }
-
+            _context.Product.Remove(product);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -263,14 +297,6 @@ namespace Test.Controllers
         {
             string imreBase64Data = Convert.ToBase64String(product.Picture);
             return string.Format("data:image/png;base64,{0}", imreBase64Data);
-        }
-
-        public IActionResult SubmitCategory()
-        {
-            List<SelectListItem> categories = new List<SelectListItem>(new SelectList(_context.Category, "Id", "Name"));
-            categories.Insert(0, (new SelectListItem { Text = null, Value = null }));
-            ViewData["CategoryId"] = categories;
-            return View(new ProductViewModel());
         }
 
         private List<CategoryField>? GetCategoryFields(int? categoryId)
@@ -290,7 +316,7 @@ namespace Test.Controllers
             while (currentCategory?.ParentId != null)
             {
                 currentCategory = _context.Category
-                    .Include(c => c.Fields) // Eager loading
+                    .Include(c => c.Fields)
                     .FirstOrDefault(c => c.Id == currentCategory.ParentId);
                 categoryFields?.AddRange(currentCategory.Fields);
             }

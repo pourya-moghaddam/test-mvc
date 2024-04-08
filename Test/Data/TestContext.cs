@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Test.Models;
 
 namespace Test.Data
 {
@@ -17,10 +12,6 @@ namespace Test.Data
         public DbSet<Test.Models.Product> Product { get; set; }
         public DbSet<Test.Models.Category> Category { get; set; }
         public DbSet<Test.Models.CategoryField> CategoryField { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-        }
+        public DbSet<Test.Models.FieldValuePair> FieldValuePair { get; set; }
     }
 }

@@ -26,35 +26,19 @@ public static class SeedData
         context.Product.AddRange(
             new Product
             {
-                Name = "گوشی الکی 1",
-                Description = null,
-                Color = "black",
-                Picture = ReadBytesFromFile("wwwroot\\img\\cartoon-pictures-of-cell-phones-33.png"),
-                Price = 123456789M
+                Name = "Samsung - Galaxy Book2 Pro 360 2-in-1",
+                Description = "Samsung Galaxy Book",
+                Color = "Silver",
+                Picture = ReadBytesFromFile("wwwroot\\img\\3WJBPrRoqmkhkFA3oRe9Yc.png"),
+                Price = 1200M
             },
             new Product
             {
-                Name = "گوشی الکی 2",
-                Description = null,
-                Color = "blue",
-                Picture = ReadBytesFromFile("wwwroot\\img\\cartoon-pictures-of-cell-phones-33.png"),
-                Price = 987654321M
-            },
-            new Product
-            {
-                Name = "گوشی هوشمند گرون",
-                Description = "گوشی خیلی گرون",
-                Color = "white",
-                Picture = ReadBytesFromFile("wwwroot\\img\\smartphone-png-550x620_c42612e1_transparent_202168.png.png"),
-                Price = 27000000M
-            },
-            new Product
-            {
-                Name = "گوشی هوشمند ارزون",
-                Description = "گوشی بدرد نخور",
-                Color = "red",
-                Picture = ReadBytesFromFile("wwwroot\\img\\smartphone_PNG8533.png"),
-                Price = 121000M
+                Name = "Apple - MacBook Pro",
+                Description = "Latest Macbook Pro",
+                Color = "Space Black",
+                Picture = ReadBytesFromFile("wwwroot\\img\\MacBook-Pro-Space-Black-M3-Pro.png"),
+                Price = 1999M
             }
         );
         context.SaveChanges();
